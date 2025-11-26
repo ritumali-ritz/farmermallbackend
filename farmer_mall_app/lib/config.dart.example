@@ -1,0 +1,74 @@
+import 'package:flutter/foundation.dart';
+
+/// App Configuration
+/// 
+/// IMPORTANT: Update this file when you deploy your backend to cloud!
+/// 
+/// For Local Development:
+/// - Use your local IP address (e.g., 192.168.1.100)
+/// - Update when you change networks
+/// 
+/// For Production (Cloud Deployment):
+/// - Use your deployed URL (e.g., farmer-mall-backend.onrender.com)
+/// - Use HTTPS (port 443)
+class AppConfig {
+  // ============================================
+  // DEPLOYMENT MODE
+  // ============================================
+  // Set to true when backend is deployed to cloud
+  static const bool isProduction = false; // Change to true after deployment
+  
+  // ============================================
+  // LOCAL DEVELOPMENT (when isProduction = false)
+  // ============================================
+  static const String localServerIP = '10.91.17.111'; // Your local IP
+  static const int localServerPort = 5000;
+  
+  // ============================================
+  // PRODUCTION/CLOUD (when isProduction = true)
+  // ============================================
+  // Update this with your deployed backend URL
+  // Examples:
+  // - farmer-mall-backend.onrender.com (Render)
+  // - your-app.railway.app (Railway)
+  // - your-app.herokuapp.com (Heroku)
+  static const String productionServerURL = 'your-backend-url.onrender.com';
+  static const bool useHttps = true; // Always use HTTPS for cloud
+  
+  // ============================================
+  // AUTO-CONFIGURED (Don't change these)
+  // ============================================
+  static String get baseUrl {
+    if (kIsWeb) {
+      return 'http://localhost:5000';
+    } else {
+      if (isProduction) {
+        // Production: Use cloud URL with HTTPS
+        return useHttps 
+            ? 'https://$productionServerURL'
+            : 'http://$productionServerURL';
+      } else {
+        // Development: Use local IP
+        return 'http://$localServerIP:$localServerPort';
+      }
+    }
+  }
+  
+  // Socket.IO URL for real-time features (chat, notifications)
+  static String get socketUrl {
+    if (kIsWeb) {
+      return 'http://localhost:5000';
+    } else {
+      if (isProduction) {
+        // Production: Use cloud URL with HTTPS
+        return useHttps 
+            ? 'https://$productionServerURL'
+            : 'http://$productionServerURL';
+      } else {
+        // Development: Use local IP
+        return 'http://$localServerIP:$localServerPort';
+      }
+    }
+  }
+}
+

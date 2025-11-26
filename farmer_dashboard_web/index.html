@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farmer Dashboard - Farm Details</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌾 Farmer Dashboard</h1>
+            <p>Manage Your Farm Details</p>
+        </div>
+        <div class="content">
+            <div id="alert-container"></div>
+            
+            <div class="stats" id="stats-container">
+                <!-- Stats will be loaded here -->
+            </div>
+
+            <h2 style="margin-bottom: 20px;">Farm Information</h2>
+            
+            <form id="farm-form">
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="farm_name">Farm Name *</label>
+                        <input type="text" id="farm_name" name="farm_name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="farm_area">Farm Area (acres)</label>
+                        <input type="number" id="farm_area" name="farm_area" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="farm_type">Farm Type</label>
+                        <select id="farm_type" name="farm_type">
+                            <option value="">Select type</option>
+                            <option value="Organic">Organic</option>
+                            <option value="Conventional">Conventional</option>
+                            <option value="Mixed">Mixed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="farm_address">Farm Address</label>
+                    <textarea id="farm_address" name="farm_address" rows="3"></textarea>
+                </div>
+
+                <div class="grid">
+                    <div class="form-group">
+                        <label for="crops_grown">Crops Grown</label>
+                        <textarea id="crops_grown" name="crops_grown" rows="3" placeholder="e.g., Wheat, Rice, Corn"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="livestock">Livestock</label>
+                        <textarea id="livestock" name="livestock" rows="3" placeholder="e.g., Cows, Chickens, Goats"></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="certification">Certifications</label>
+                    <input type="text" id="certification" name="certification" placeholder="e.g., Organic Certified, ISO 9001">
+                </div>
+
+                <div class="form-group">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="4" placeholder="Tell us about your farm..."></textarea>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-success">Save Farm Details</button>
+                    <button type="button" class="btn btn-secondary" onclick="loadFarmDetails()">Refresh</button>
+                </div>
+            </form>
+
+            <div id="farm-details" style="margin-top: 40px;">
+                <!-- Farm details will be displayed here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000';
+        let farmerId = null;
+
+        // Get farmer ID from URL or prompt
+        function getFarmerId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            farmerId = urlParams.get('farmer_id') || prompt('Enter your Farmer ID:');
+            if (!farmerId) {
+                showAlert('Please provide a Farmer ID', 'error');
+                return false;
+            }
+            return true;
+        }
+
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alert-container');
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        async function loadFarmDetails() {
+            if (!getFarmerId()) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/farm/${farmerId}`);
+                const data = await response.json();
+
+                if (data) {
+                    // Populate form
+                    document.getElementById('farm_name').value = data.farm_name || '';
+                    document.getElementById('farm_address').value = data.farm_address || '';
+                    document.getElementById('farm_area').value = data.farm_area || '';
+                    document.getElementById('farm_type').value = data.farm_type || '';
+                    document.getElementById('crops_grown').value = data.crops_grown || '';
+                    document.getElementById('livestock').value = data.livestock || '';
+                    document.getElementById('certification').value = data.certification || '';
+                    document.getElementById('description').value = data.description || '';
+
+                    // Display farm details
+                    displayFarmDetails(data);
+                } else {
+                    document.getElementById('farm-details').innerHTML = '<p>No farm details found. Please fill the form to add your farm information.</p>';
+                }
+            } catch (error) {
+                console.error('Error loading farm details:', error);
+                showAlert('Error loading farm details', 'error');
+            }
+        }
+
+        function displayFarmDetails(data) {
+            const container = document.getElementById('farm-details');
+            container.innerHTML = `
+                <h2>Current Farm Details</h2>
+                <div class="grid">
+                    ${data.farm_name ? `<div class="card"><h3>Farm Name</h3><p>${data.farm_name}</p></div>` : ''}
+                    ${data.farm_area ? `<div class="card"><h3>Farm Area</h3><p>${data.farm_area} acres</p></div>` : ''}
+                    ${data.farm_type ? `<div class="card"><h3>Farm Type</h3><p>${data.farm_type}</p></div>` : ''}
+                    ${data.certification ? `<div class="card"><h3>Certification</h3><p>${data.certification}</p></div>` : ''}
+                </div>
+                ${data.farm_address ? `<div class="card"><h3>Address</h3><p>${data.farm_address}</p></div>` : ''}
+                ${data.crops_grown ? `<div class="card"><h3>Crops Grown</h3><p>${data.crops_grown}</p></div>` : ''}
+                ${data.livestock ? `<div class="card"><h3>Livestock</h3><p>${data.livestock}</p></div>` : ''}
+                ${data.description ? `<div class="card"><h3>Description</h3><p>${data.description}</p></div>` : ''}
+            `;
+        }
+
+        document.getElementById('farm-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!getFarmerId()) return;
+
+            const formData = {
+                farmer_id: parseInt(farmerId),
+                farm_name: document.getElementById('farm_name').value,
+                farm_address: document.getElementById('farm_address').value,
+                farm_area: document.getElementById('farm_area').value ? parseFloat(document.getElementById('farm_area').value) : null,
+                farm_type: document.getElementById('farm_type').value,
+                crops_grown: document.getElementById('crops_grown').value,
+                livestock: document.getElementById('livestock').value,
+                certification: document.getElementById('certification').value,
+                description: document.getElementById('description').value,
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/farm/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('Farm details saved successfully!', 'success');
+                    loadFarmDetails();
+                } else {
+                    showAlert(data.message || 'Error saving farm details', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving farm details:', error);
+                showAlert('Error saving farm details', 'error');
+            }
+        });
+
+        // Load farm details on page load
+        window.addEventListener('load', () => {
+            if (getFarmerId()) {
+                loadFarmDetails();
+            }
+        });
+    </script>
+</body>
+</html>
+

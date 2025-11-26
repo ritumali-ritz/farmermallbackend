@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Farmer Mall</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 15px;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .sidebar-menu a:hover, .sidebar-menu a.active {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #10B981;
+        }
+
+        .content-section {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .content-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 5px;
+        }
+
+        .btn-primary {
+            background: #10B981;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #EF4444;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6B7280;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .banner-preview {
+            max-width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .alert-error {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>🌾 Admin Panel</h2>
+        <ul class="sidebar-menu">
+            <li><a href="#" onclick="showSection('dashboard')" class="active">Dashboard</a></li>
+            <li><a href="#" onclick="showSection('users')">Users</a></li>
+            <li><a href="#" onclick="showSection('farmers')">Farmers</a></li>
+            <li><a href="#" onclick="showSection('products')">Products</a></li>
+            <li><a href="#" onclick="showSection('banners')">Banners</a></li>
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Admin Dashboard</h1>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Users</h3>
+                    <div class="value" id="stat-users">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Farmers</h3>
+                    <div class="value" id="stat-farmers">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Buyers</h3>
+                    <div class="value" id="stat-buyers">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Products</h3>
+                    <div class="value" id="stat-products">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Orders</h3>
+                    <div class="value" id="stat-orders">-</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Section -->
+        <div id="users-section" class="hidden">
+            <div class="content-section">
+                <h2>All Users</h2>
+                <table id="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Role</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Farmers Section -->
+        <div id="farmers-section" class="hidden">
+            <div class="content-section">
+                <h2>All Farmers</h2>
+                <table id="farmers-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Products</th>
+                            <th>Joined</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="farmers-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <div id="products-section" class="hidden">
+            <div class="content-section">
+                <h2>All Products</h2>
+                <table id="products-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Farmer</th>
+                            <th>Image</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="products-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Banners Section -->
+        <div id="banners-section" class="hidden">
+            <div class="content-section">
+                <h2>Banner Management</h2>
+                <button class="btn btn-primary" onclick="showBannerForm()">Add New Banner</button>
+                
+                <div id="banner-form" class="hidden" style="margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                    <h3>Add/Edit Banner</h3>
+                    <form id="banner-form-element" onsubmit="saveBanner(event)">
+                        <input type="hidden" id="banner-id">
+                        <div class="form-group">
+                            <label>Title</label>
+                            <input type="text" id="banner-title" placeholder="Banner title">
+                        </div>
+                        <div class="form-group">
+                            <label>Image URL</label>
+                            <input type="text" id="banner-image-url" placeholder="/banner-files/Organic.jpg or https://example.com/img.png" required>
+                            <small>Upload via /upload/banner or pick from the banner/ folder (served at /banner-files/...)</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Link URL (Optional)</label>
+                            <input type="text" id="banner-link-url" placeholder="/products or https://example.com">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Display Order</label>
+                                <input type="number" id="banner-order" value="0">
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select id="banner-status">
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="banner-preview-container"></div>
+                        <button type="submit" class="btn btn-primary">Save Banner</button>
+                        <button type="button" class="btn btn-secondary" onclick="cancelBannerForm()">Cancel</button>
+                    </form>
+                </div>
+
+                <table style="margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Image</th>
+                            <th>Link</th>
+                            <th>Order</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="banners-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000';
+
+        function normalizePath(url) {
+            if (!url) return '';
+            const trimmed = url.trim();
+            if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+                return trimmed;
+            }
+            return trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+        }
+
+        function resolveImageUrl(url) {
+            const normalized = normalizePath(url);
+            if (!normalized) return '';
+            return normalized.startsWith('http') ? normalized : `${API_BASE}${normalized}`;
+        }
+
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alert-container');
+            container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        function showSection(section) {
+            // Hide all sections
+            document.querySelectorAll('[id$="-section"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+            
+            // Show selected section
+            document.getElementById(section + '-section').classList.remove('hidden');
+            
+            // Update active menu
+            document.querySelectorAll('.sidebar-menu a').forEach(a => {
+                a.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Load data for section
+            if (section === 'dashboard') loadStats();
+            else if (section === 'users') loadUsers();
+            else if (section === 'farmers') loadFarmers();
+            else if (section === 'products') loadProducts();
+            else if (section === 'banners') loadBanners();
+        }
+
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/stats`);
+                const stats = await res.json();
+                document.getElementById('stat-users').textContent = stats.totalUsers || 0;
+                document.getElementById('stat-farmers').textContent = stats.totalFarmers || 0;
+                document.getElementById('stat-buyers').textContent = stats.totalBuyers || 0;
+                document.getElementById('stat-products').textContent = stats.totalProducts || 0;
+                document.getElementById('stat-orders').textContent = stats.totalOrders || 0;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/users`);
+                const users = await res.json();
+                const tbody = document.getElementById('users-tbody');
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.name}</td>
+                        <td>${user.email}</td>
+                        <td>${user.phone || '-'}</td>
+                        <td>${user.role}</td>
+                        <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteUser(${user.id})">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        async function loadFarmers() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/farmers`);
+                const farmers = await res.json();
+                const tbody = document.getElementById('farmers-tbody');
+                tbody.innerHTML = farmers.map(farmer => `
+                    <tr>
+                        <td>${farmer.id}</td>
+                        <td>${farmer.name}</td>
+                        <td>${farmer.email}</td>
+                        <td>${farmer.phone || '-'}</td>
+                        <td>${farmer.product_count || 0}</td>
+                        <td>${new Date(farmer.created_at).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteUser(${farmer.id})">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading farmers:', error);
+            }
+        }
+
+        async function loadProducts() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/products`);
+                const products = await res.json();
+                const tbody = document.getElementById('products-tbody');
+                tbody.innerHTML = products.map(product => `
+                    <tr>
+                        <td>${product.id}</td>
+                        <td>${product.name}</td>
+                        <td>₹${product.price}</td>
+                        <td>${product.quantity}</td>
+                        <td>${product.farmer_name}</td>
+                        <td>${product.image_url ? `<img src="${API_BASE}${product.image_url}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">` : '-'}</td>
+                        <td>
+                            <button class="btn btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading products:', error);
+            }
+        }
+
+        async function loadBanners() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/banners/all`);
+                const banners = await res.json();
+                const tbody = document.getElementById('banners-tbody');
+                tbody.innerHTML = banners.map(banner => `
+                    <tr>
+                        <td>${banner.id}</td>
+                        <td>${banner.title || '-'}</td>
+                        <td><img src="${resolveImageUrl(banner.image_url)}" class="banner-preview" style="width: 100px; height: 50px;"></td>
+                        <td>${banner.link_url || '-'}</td>
+                        <td>${banner.display_order}</td>
+                        <td>${banner.status}</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="editBanner(${banner.id})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteBanner(${banner.id})">Delete</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading banners:', error);
+            }
+        }
+
+        async function deleteUser(id) {
+            if (!confirm('Are you sure you want to delete this user?')) return;
+            try {
+                const res = await fetch(`${API_BASE}/admin/users/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                showAlert(data.message || 'User deleted');
+                loadUsers();
+                loadFarmers();
+            } catch (error) {
+                showAlert('Error deleting user', 'error');
+            }
+        }
+
+        async function deleteProduct(id) {
+            if (!confirm('Are you sure you want to delete this product?')) return;
+            try {
+                const res = await fetch(`${API_BASE}/admin/products/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                showAlert(data.message || 'Product deleted');
+                loadProducts();
+            } catch (error) {
+                showAlert('Error deleting product', 'error');
+            }
+        }
+
+        function showBannerForm() {
+            document.getElementById('banner-form').classList.remove('hidden');
+            document.getElementById('banner-form-element').reset();
+            document.getElementById('banner-id').value = '';
+            document.getElementById('banner-preview-container').innerHTML = '';
+        }
+
+        function cancelBannerForm() {
+            document.getElementById('banner-form').classList.add('hidden');
+        }
+
+        async function saveBanner(e) {
+            e.preventDefault();
+            const id = document.getElementById('banner-id').value;
+            const data = {
+                title: document.getElementById('banner-title').value,
+                image_url: normalizePath(document.getElementById('banner-image-url').value),
+                link_url: document.getElementById('banner-link-url').value ? normalizePath(document.getElementById('banner-link-url').value) : '',
+                display_order: parseInt(document.getElementById('banner-order').value),
+                status: document.getElementById('banner-status').value,
+            };
+
+            try {
+                const url = id ? `${API_BASE}/admin/banners/${id}` : `${API_BASE}/admin/banners`;
+                const method = id ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+                const result = await res.json();
+                showAlert(result.message || 'Banner saved');
+                cancelBannerForm();
+                loadBanners();
+            } catch (error) {
+                showAlert('Error saving banner', 'error');
+            }
+        }
+
+        async function editBanner(id) {
+            try {
+                const res = await fetch(`${API_BASE}/admin/banners/all`);
+                const banners = await res.json();
+                const banner = banners.find(b => b.id === id);
+                if (banner) {
+                    document.getElementById('banner-id').value = banner.id;
+                    document.getElementById('banner-title').value = banner.title || '';
+                    document.getElementById('banner-image-url').value = banner.image_url;
+                    document.getElementById('banner-link-url').value = banner.link_url || '';
+                    document.getElementById('banner-order').value = banner.display_order;
+                    document.getElementById('banner-status').value = banner.status;
+                    document.getElementById('banner-form').classList.remove('hidden');
+                    updateBannerPreview(banner.image_url);
+                }
+            } catch (error) {
+                showAlert('Error loading banner', 'error');
+            }
+        }
+
+        async function deleteBanner(id) {
+            if (!confirm('Are you sure you want to delete this banner?')) return;
+            try {
+                const res = await fetch(`${API_BASE}/admin/banners/${id}`, { method: 'DELETE' });
+                const data = await res.json();
+                showAlert(data.message || 'Banner deleted');
+                loadBanners();
+            } catch (error) {
+                showAlert('Error deleting banner', 'error');
+            }
+        }
+
+        function updateBannerPreview(url) {
+            const container = document.getElementById('banner-preview-container');
+            if (!url) {
+                container.innerHTML = '';
+                return;
+            }
+            container.innerHTML = `<img src="${resolveImageUrl(url)}" class="banner-preview">`;
+        }
+
+        document.getElementById('banner-image-url').addEventListener('input', (e) => {
+            if (e.target.value) {
+                updateBannerPreview(e.target.value);
+            }
+        });
+
+        // Load dashboard on page load
+        window.addEventListener('load', () => {
+            loadStats();
+        });
+    </script>
+</body>
+</html>
+
