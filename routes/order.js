@@ -57,15 +57,14 @@ router.post("/place", async (req, res) => {
 
         const orderId = await addDoc("orders", orderData);
 
-        // Get order details with product and buyer info for notification
+        // Get order details with product info for notification
         const orderDoc = await db.collection("orders").doc(orderId).get();
         const productDoc = await db.collection("products").doc(product_id).get();
-        const buyerDoc = await db.collection("users").doc(buyer_id).get();
 
-        if (orderDoc.exists && productDoc.exists && buyerDoc.exists && io) {
+        if (orderDoc.exists && productDoc.exists && io) {
             const order = { id: orderDoc.id, ...orderDoc.data() };
             const product = { id: productDoc.id, ...productDoc.data() };
-            const buyer = { id: buyerDoc.id, ...buyerDoc.data() };
+            // Reuse buyer object we already have from line 30
 
             // Send notification to farmer via Socket.IO
             io.emit(`order_notification_${farmer_id}`, {
