@@ -11,27 +11,44 @@ import 'package:flutter/foundation.dart';
 /// 3. Look for IPv4 address (usually 192.168.x.x or 10.x.x.x)
 class AppConfig {
   // ============================================
-  // UPDATE THIS IP WHEN YOU CHANGE NETWORKS!
+  // Environment toggles
   // ============================================
-  static const String serverIP = '10.91.17.111'; // Change this!
+  static const bool isProduction = true; // Use Render backend
+  static const bool useHttps = true;
+
+  // Render deployment URL (no protocol)
+  static const String productionServerURL = 'farmermallbackend.onrender.com';
+
+  // Local development fallback
+  static const String serverIP = '10.91.17.111'; // Update when network changes
   static const int serverPort = 5000;
   
-  // Base URL for API calls
   static String get baseUrl {
     if (kIsWeb) {
       return 'http://localhost:$serverPort';
-    } else {
-      return 'http://$serverIP:$serverPort';
     }
+
+    if (isProduction) {
+      return useHttps
+          ? 'https://$productionServerURL'
+          : 'http://$productionServerURL';
+    }
+
+    return 'http://$serverIP:$serverPort';
   }
   
-  // Socket.IO URL for real-time features
   static String get socketUrl {
     if (kIsWeb) {
       return 'http://localhost:$serverPort';
-    } else {
-      return 'http://$serverIP:$serverPort';
     }
+
+    if (isProduction) {
+      return useHttps
+          ? 'https://$productionServerURL'
+          : 'http://$productionServerURL';
+    }
+
+    return 'http://$serverIP:$serverPort';
   }
 }
 
