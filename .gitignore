@@ -29,3 +29,6 @@ Thumbs.db
 # uploads/
 # images/
 
+# Files with sensitive data (should not be committed)
+FIREBASE_ENV_VARIABLE.txt
+
